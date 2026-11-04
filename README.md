@@ -5,6 +5,9 @@
 ![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+[![Microsoft Edge Add-ons](https://img.shields.io/badge/Microsoft%20Edge%20Add--ons-Get%20it-0078D7?logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/fgaeedoijlodfhnpimpnjlmndinhnohh)
+
+**[➜ Install from the Microsoft Edge Add-ons store](https://microsoftedge.microsoft.com/addons/detail/fgaeedoijlodfhnpimpnjlmndinhnohh)** (Microsoft's store for Edge — the extension is not on the Google Chrome Web Store yet).
 
 AI Quick Copy is a lightweight Chrome / Edge extension that grabs the assistant response you are reading on ChatGPT, Gemini, Grok, or Claude and puts it on your clipboard as Markdown — headings, lists, code blocks, tables and all.
 
@@ -96,11 +99,17 @@ Changes are saved automatically and apply to the next copy — no tab reload nee
 
 ## Installation
 
-### From the store (recommended)
+### Microsoft Edge: from the store (recommended)
 
-AI Quick Copy is published on **Microsoft Edge Add-ons**: open the Edge Add-ons store, search for **AI Quick Copy** and click **Get**. Updates install automatically.
+AI Quick Copy is published on **Microsoft Edge Add-ons**, Microsoft's official store for Edge:
 
-### Manual install (Chrome, or to try the latest code)
+👉 **https://microsoftedge.microsoft.com/addons/detail/fgaeedoijlodfhnpimpnjlmndinhnohh**
+
+Open the link in Microsoft Edge and click **Get**. Updates install automatically.
+
+> It is **not** on the Google Chrome Web Store yet. Chrome users can install it manually (below).
+
+### Google Chrome, or to try the latest code: manual install
 
 1. Download the source:
    ```bash
