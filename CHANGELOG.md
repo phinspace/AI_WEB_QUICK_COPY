@@ -3,13 +3,13 @@
 All notable changes to this project are documented in this file.
 
 ## 1.5.0
-- New: **Copy all AI tabs** — press `Alt+C` (`⌃ Control+Shift+C` on macOS) to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. Works from any tab, even one that is not an AI site.
+- New: **Copy all AI tabs** — press `Ctrl+C` twice quickly (`⌘C` `⌘C` on macOS) on an AI page to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. A browser shortcut does the same from any tab: suggested `Alt+C` (`⌃ Control+Shift+C` on macOS); Edge reserves `Alt+C`, so Edge users assign a key at `edge://extensions/shortcuts`.
 - Choose which AIs are gathered: untick an AI in the settings (e.g. Gemini) and copy-all leaves it out; the toast names it. All are ticked by default; the single-answer `Ctrl+C` is not affected.
-- Press `Ctrl+C` (`⌘C`) twice quickly on an AI page, with nothing selected, to copy all AI tabs (on by default; further quick presses give the same result). A single press still copies the answer on screen. Turn it off in the settings to keep `Ctrl+C` single-answer only. Recommended on Windows, where `Alt+C` may be swallowed by the browser menu.
+- The double press is on by default (also after updating from 1.4); further quick presses give the same result, and a single press still copies the answer on screen. Turn it off in the settings to keep `Ctrl+C` single-answer only.
 - The toast lists which AIs were copied and why any tab was skipped: no response yet, still loading, asleep, not responding within 2 seconds, or needs a reload (opened before the extension was installed or updated). A stuck tab never holds up the copy.
 - On x.com only Grok pages (`x.com/i/grok`) are gathered, so posts are never copied by mistake.
 - Settings page: new "Copy tất cả tab AI" card with the current shortcut (or that it is unassigned), a button to change it, the per-AI checkboxes and the double `Ctrl+C` option.
-- New permissions `activeTab` and `scripting`, used only to write the clipboard and show the toast in the tab you are on when you press `Alt+C`. `host_permissions` repeats the existing AI sites. None adds an install warning, so existing users are not asked to approve again.
+- New permissions `activeTab` and `scripting`, used only to write the clipboard and show the toast in the tab you are on when you use the browser shortcut. `host_permissions` repeats the existing AI sites. None adds an install warning, so existing users are not asked to approve again.
 
 ## 1.4.1
 - Added the extension icon (toolbar, extensions page and store listing).

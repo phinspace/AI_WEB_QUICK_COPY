@@ -147,7 +147,7 @@ pre {
 }
 
 .shortcut { display: inline-flex; align-items: center; gap: 8px; }
-.shortcut .unset { color: #b42318; font-weight: 600; }
+.shortcut .unset { color: #b45309; font-weight: 600; font-size: 13px; }
 .muted { color: #4b5563; font-size: 13px; line-height: 2; }
 
 button.secondary {
@@ -157,6 +157,7 @@ button.secondary {
   background: #fff;
   color: #111827;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .note { margin: 10px 0 0; font-size: 13px; color: #6b7280; }

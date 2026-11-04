@@ -122,7 +122,7 @@ async function showShortcut() {
     // The suggested key was already taken (by the browser or another extension).
     const unset = document.createElement("span");
     unset.className = "unset";
-    unset.textContent = "Chưa gán — bấm “Đổi phím tắt” để chọn";
+    unset.textContent = "Chưa gán (Edge giữ sẵn Alt+C). Bấm “Đổi phím tắt” nếu muốn đặt phím khác; Ctrl+C 2 lần vẫn dùng bình thường.";
     target.append(unset);
     return;
   }

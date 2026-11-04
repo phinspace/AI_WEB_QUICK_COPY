@@ -27,7 +27,7 @@ Tip: a third screenshot taken by you on a real ChatGPT / Claude page, right afte
 ## Short description (max 132 characters)
 
 ```
-Press Ctrl+C with nothing selected to copy the AI answer you're reading on ChatGPT, Gemini, Grok or Claude as clean Markdown.
+Ctrl+C copies the AI answer you're reading as Markdown; press it twice to copy every AI tab. ChatGPT, Gemini, Grok, Claude.
 ```
 
 ## Description (English)
@@ -51,7 +51,7 @@ YOUR NORMAL COPY IS UNTOUCHED
 With text highlighted, or while typing in a text box, Ctrl+C copies exactly as it always does. The extension only acts when the browser would copy nothing.
 
 COPY EVERY AI TAB AT ONCE
-Asked the same question to ChatGPT, Gemini, Grok and Claude? Press Alt+C (⌃ Control+Shift+C on macOS) from any tab and the latest answer of every AI tab in that window is copied in one go, each labeled with its AI. Untick the AIs you don't want in the settings.
+Asked the same question to ChatGPT, Gemini, Grok and Claude? Press Ctrl+C twice quickly (⌘C ⌘C on macOS) and the latest answer of every AI tab in that window is copied in one go, each labeled with its AI. You can also set a browser shortcut to do it from any tab. Untick the AIs you don't want in the settings.
 
 COPIES THE ANSWER ON SCREEN
 At the bottom of a chat it copies the latest answer; scroll up and it copies the older answer you are looking at.
@@ -59,7 +59,7 @@ At the bottom of a chat it copies the latest answer; scroll up and it copies the
 PRIVATE BY DESIGN
 • 100% local: no server, no account, no analytics, no network requests
 • Reads content only on chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com and claude.ai
-• "storage" saves your settings; "activeTab" and "scripting" only write the clipboard when you press Alt+C
+• "storage" saves your settings; "activeTab" and "scripting" only write the clipboard when you use the optional browser shortcut
 • Copied answers are never stored
 
 Open source (MIT): https://github.com/phinspace/AI_WEB_QUICK_COPY
@@ -88,7 +88,7 @@ KHÔNG ẢNH HƯỞNG CÁCH COPY BÌNH THƯỜNG
 Khi đang bôi đen chữ hoặc đang gõ trong ô nhập, Ctrl+C vẫn copy như thường. Extension chỉ làm việc khi trình duyệt không có gì để copy.
 
 COPY TẤT CẢ TAB AI CÙNG LÚC
-Hỏi cùng 1 câu cho ChatGPT, Gemini, Grok và Claude? Ở bất kỳ tab nào, nhấn Alt+C (⌃ Control+Shift+C trên macOS) là câu trả lời mới nhất của mọi tab AI trong cửa sổ đó được copy cùng lúc, mỗi đoạn có tên AI. Bỏ tích AI bạn không muốn gom trong phần cài đặt.
+Hỏi cùng 1 câu cho ChatGPT, Gemini, Grok và Claude? Nhấn nhanh Ctrl+C 2 lần (⌘C ⌘C trên macOS) là câu trả lời mới nhất của mọi tab AI trong cửa sổ đó được copy cùng lúc, mỗi đoạn có tên AI. Có thể đặt thêm phím tắt trình duyệt để dùng ở bất kỳ tab nào. Bỏ tích AI bạn không muốn gom trong phần cài đặt.
 
 COPY ĐÚNG CÂU TRẢ LỜI ĐANG XEM
 Ở cuối cuộc trò chuyện thì copy câu mới nhất; cuộn lên thì copy câu trả lời cũ đang nằm trên màn hình.
@@ -96,12 +96,28 @@ COPY ĐÚNG CÂU TRẢ LỜI ĐANG XEM
 RIÊNG TƯ TUYỆT ĐỐI
 • Chạy 100% trên máy: không server, không tài khoản, không thống kê, không gửi dữ liệu đi đâu
 • Chỉ đọc nội dung trên chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com và claude.ai
-• "storage" để lưu cài đặt; "activeTab" và "scripting" chỉ dùng để ghi clipboard khi bạn nhấn Alt+C
+• "storage" để lưu cài đặt; "activeTab" và "scripting" chỉ dùng để ghi clipboard khi bạn dùng phím tắt trình duyệt (tuỳ chọn)
 • Không bao giờ lưu nội dung đã copy
 
 Mã nguồn mở (MIT): https://github.com/phinspace/AI_WEB_QUICK_COPY
 
 AI Quick Copy là dự án độc lập, không liên kết với OpenAI, Google, xAI hay Anthropic.
+```
+
+## What's new in 1.5.0 (update notes)
+
+```
+• Copy all AI tabs: press Ctrl+C twice quickly on an AI page to copy the latest answer of every ChatGPT, Gemini, Grok and Claude tab in the current window, one labeled block per AI.
+• Choose which AIs are gathered in the settings (untick one to leave it out).
+• Optional browser shortcut to do it from any tab (set it at edge://extensions/shortcuts).
+• A single Ctrl+C still copies only the answer you are reading.
+```
+
+```
+• Copy tất cả tab AI: nhấn nhanh Ctrl+C 2 lần trên trang AI để copy câu trả lời mới nhất của mọi tab ChatGPT, Gemini, Grok, Claude trong cửa sổ, mỗi AI một block có tên.
+• Chọn AI được gom trong phần cài đặt (bỏ tích để loại AI đó ra).
+• Có thể đặt phím tắt trình duyệt để dùng ở bất kỳ tab nào (edge://extensions/shortcuts).
+• Nhấn Ctrl+C 1 lần vẫn chỉ copy câu đang xem.
 ```
 
 ## Privacy / data questions
@@ -116,8 +132,8 @@ AI Quick Copy là dự án độc lập, không liên kết với OpenAI, Google
 ### Permission justifications
 
 - **`storage`**: Saves the user's settings (identity blocks on/off, an optional role name per AI, which AIs copy-all gathers, double Ctrl+C on/off). No browsing data or copied content is stored.
-- **Host access (chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com, claude.ai)**: The content script reads the AI response on the page when the user presses Ctrl+C / ⌘C with nothing selected, converts it to Markdown locally, and writes it to the clipboard. When the user presses Alt+C, the service worker finds the tabs on these sites in the current window and asks each for its latest response. It runs on no other sites.
-- **`activeTab`** and **`scripting`**: Only when the user presses the Alt+C command, a small function is run in the current tab to write the combined responses to the clipboard and show a confirmation toast (a service worker cannot access the clipboard). It reads nothing from that page.
+- **Host access (chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com, claude.ai)**: The content script reads the AI response on the page when the user presses Ctrl+C / ⌘C with nothing selected, converts it to Markdown locally, and writes it to the clipboard. When the user presses Ctrl+C twice quickly (or the optional browser shortcut), the service worker finds the tabs on these sites in the current window and asks each for its latest response. It runs on no other sites.
+- **`activeTab`** and **`scripting`**: Only when the user presses the extension's browser shortcut ("copy-all-latest"; suggested Alt+C, which Edge reserves, so on Edge the user assigns a key), a small function is run in the current tab to write the combined responses to the clipboard and show a confirmation toast (a service worker cannot access the clipboard). It reads nothing from that page.
 
 ## Notes for certification (reviewers)
 
@@ -128,7 +144,7 @@ How to test:
 3. Click on an empty area of the page so nothing is selected, then press Ctrl+C (Cmd+C on macOS).
 4. A toast confirms the copy. Paste into any text editor: the answer is Markdown.
 Highlighting text and pressing Ctrl+C performs a normal browser copy.
-Copy all AI tabs: open two AI sites in separate tabs (e.g. chatgpt.com and gemini.google.com), ask a question in each, then press Alt+C (Control+Shift+C on macOS) from any tab. A toast lists the AIs copied; the clipboard holds both answers, one block per AI.
+Copy all AI tabs: open two AI sites in separate tabs (e.g. chatgpt.com and gemini.google.com), ask a question in each, click an empty area of one of them and press Ctrl+C twice quickly (Cmd+C twice on macOS). A toast lists the AIs copied; the clipboard holds both answers, one block per AI. A single Ctrl+C still copies only the answer on screen.
 Clicking the toolbar icon opens the settings page.
 No account, login or network access is required by the extension itself.
 ```
