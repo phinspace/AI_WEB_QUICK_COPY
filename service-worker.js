@@ -56,9 +56,8 @@ const COLLECT_TIMEOUT = 2000;
 
 // Ask one tab for its latest response. A tab opened before the extension
 // was installed or updated has no content script and does not answer.
+// A tab still loading may simply not have its content script yet.
 async function collect(tab) {
-  if (tab.status === "loading") return { ok: false, reason: "loading" };
-
   let timer;
   const timeout = new Promise((resolve) => {
     timer = setTimeout(() => resolve({ ok: false, reason: "timeout" }), COLLECT_TIMEOUT);
@@ -69,9 +68,10 @@ async function collect(tab) {
       chrome.tabs.sendMessage(tab.id, { type: "aqc:collect-latest" }),
       timeout
     ]);
-    return reply || { ok: false, reason: "no-script" };
+    if (reply?.reason !== "timeout" && reply) return reply;
+    return { ok: false, reason: tab.status === "loading" ? "loading" : (reply?.reason || "no-script") };
   } catch (_) {
-    return { ok: false, reason: "no-script" };
+    return { ok: false, reason: tab.status === "loading" ? "loading" : "no-script" };
   } finally {
     clearTimeout(timer);
   }
