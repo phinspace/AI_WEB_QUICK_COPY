@@ -92,7 +92,7 @@ Ctrl+C / ⌘C
 ## Copy all AI tabs (`Alt+C` / macOS `Control+Shift+C`, or double `Ctrl+C`)
 
 ```text
-chrome.commands "copy-all-latest"        double Ctrl+C in content.js (opt-in)
+chrome.commands "copy-all-latest"        double Ctrl+C in content.js (on by default)
       │                                      │ runtime.sendMessage("aqc:copy-all")
       ▼                                      ▼
 service-worker.js gather() → drop unticked AIs (settings.include) → tabs.query(AI sites in the current window; x.com only /i/grok*)

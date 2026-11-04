@@ -118,11 +118,12 @@
     );
   }
 
-  // Double Ctrl+C / ⌘C (opt-in): the second press within this delay copies
-  // all AI tabs instead of the answer on screen.
+  // Double Ctrl+C / ⌘C (on by default): the second press within this delay
+  // copies all AI tabs instead of the answer on screen. Every further quick
+  // press stays "all", so pressing 3 times out of habit gives the same result.
   const DOUBLE_PRESS_MS = 450;
   let lastCopyPressAt = 0;
-  let doubleCopyAll = false;
+  let doubleCopyAll = Settings.DEFAULTS.doubleCopyAll;
 
   Settings.load().then((settings) => {
     doubleCopyAll = settings.doubleCopyAll;
@@ -131,7 +132,8 @@
   try {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "sync" && changes.settings) {
-        doubleCopyAll = changes.settings.newValue?.doubleCopyAll === true;
+        const value = changes.settings.newValue?.doubleCopyAll;
+        doubleCopyAll = typeof value === "boolean" ? value : Settings.DEFAULTS.doubleCopyAll;
       }
     });
   } catch (_) {}
@@ -252,7 +254,7 @@
 
       const now = Date.now();
       const isDouble = doubleCopyAll && now - lastCopyPressAt < DOUBLE_PRESS_MS;
-      lastCopyPressAt = isDouble ? 0 : now;
+      lastCopyPressAt = now;
 
       if (isDouble) copyAll();
       else copyResponse();

@@ -133,7 +133,7 @@ Press `Alt+C` (`⌃ Control+Shift+C` on macOS) from **any** tab:
 - Tabs that are asleep, still loading or not responding within 2 seconds are skipped and named in the toast, so one stuck tab never holds up the copy.
 - AI sites installed as apps open in their own window, so they are not gathered from a normal browser window.
 - **Choose the AIs:** on the settings page, untick an AI (e.g. Gemini) to leave it out of copy-all. The toast names AIs left out. All are ticked by default; `Ctrl+C` on a single page is not affected.
-- **Optional double `Ctrl+C`:** turn on *Nhấn Ctrl+C 2 lần liên tiếp* in the settings, then on an AI page, with nothing selected, press `Ctrl+C` (`⌘C`) twice quickly to copy all AI tabs. One press still copies the answer on screen. Off by default.
+- **Double `Ctrl+C` (on by default):** on an AI page, with nothing selected, press `Ctrl+C` (`⌘C`) twice quickly to copy all AI tabs; pressing a third time gives the same result. One press still copies the answer on screen. Turn it off with *Nhấn Ctrl+C 2 lần liên tiếp* in the settings. On Windows this is the most reliable way: `Alt+C` can be taken by the browser menu.
 - On macOS the shortcut is `Control+Shift+C` (the ⌃ key): `⌘C` stays the normal copy, and `⌃C` stays free to stop programs in web terminals.
 - A browser shortcut works on every site. If `Alt+C` clashes with a web app you use (e.g. "match case" in vscode.dev), change it at the shortcuts page.
 - Change the shortcut at `edge://extensions/shortcuts` (`chrome://extensions/shortcuts` in Chrome), or with the **Đổi phím tắt** button on the settings page. If the settings page shows *Chưa gán*, another extension already uses the key: pick another one there.

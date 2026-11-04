@@ -21,9 +21,9 @@
       grok: true,
       claude: true
     },
-    // Pressing Ctrl+C / ⌘C twice quickly copies all AI tabs. Off by default:
-    // many people press Ctrl+C twice out of habit.
-    doubleCopyAll: false
+    // Pressing Ctrl+C / ⌘C twice quickly copies all AI tabs. On by default:
+    // Alt+C is unreliable on Windows (Alt focuses the browser menu).
+    doubleCopyAll: true
   };
 
   const ROLE_MAX_LENGTH = 40;
@@ -55,7 +55,9 @@
         : DEFAULTS.blockMode,
       roles,
       include,
-      doubleCopyAll: stored?.doubleCopyAll === true
+      doubleCopyAll: typeof stored?.doubleCopyAll === "boolean"
+        ? stored.doubleCopyAll
+        : DEFAULTS.doubleCopyAll
     };
   };
 
