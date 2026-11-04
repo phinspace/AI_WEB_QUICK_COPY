@@ -36,8 +36,8 @@
   "commands": {
     "copy-all-latest": {
       "suggested_key": {
-        "default": "Alt+Shift+V",
-        "mac": "Alt+Shift+V"
+        "default": "Alt+C",
+        "mac": "MacCtrl+C"
       },
       "description": "Copy the latest response of every AI tab in this window"
     }

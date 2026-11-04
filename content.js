@@ -118,8 +118,51 @@
     );
   }
 
+  // Double Ctrl+C / ⌘C (opt-in): the second press within this delay copies
+  // all AI tabs instead of the answer on screen.
+  const DOUBLE_PRESS_MS = 450;
+  let lastCopyPressAt = 0;
+  let doubleCopyAll = false;
+
+  Settings.load().then((settings) => {
+    doubleCopyAll = settings.doubleCopyAll;
+  });
+
+  try {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === "sync" && changes.settings) {
+        doubleCopyAll = changes.settings.newValue?.doubleCopyAll === true;
+      }
+    });
+  } catch (_) {}
+
+  // The service worker gathers the AI tabs of this window; the clipboard is
+  // written here, from the user's key press.
+  async function copyAll() {
+    let result = null;
+
+    try {
+      result = await chrome.runtime.sendMessage({ type: "aqc:copy-all" });
+    } catch (_) {}
+
+    if (!result) {
+      AQC.showToast("Không thể copy. Hãy thử lại.", "error");
+      return;
+    }
+
+    if (!result.text) {
+      AQC.showToast(result.message, result.kind, result.duration);
+      return;
+    }
+
+    await AQC.copyText(result.text, result.message, {
+      type: result.kind,
+      duration: result.duration
+    });
+  }
+
   /**
-   * "Copy all AI tabs" (Alt+Shift+V): the service worker asks every AI tab
+   * "Copy all AI tabs" (Alt+C, or double Ctrl+C): the service worker asks every AI tab
    * for its latest response and copies them together. The latest one is
    * used even when the user scrolled up, and selections are ignored.
    */
@@ -190,11 +233,16 @@
       if (hasSelection()) return;
 
       // Nothing highlighted: the browser would copy nothing, so copy the
-      // response on screen instead.
+      // response on screen instead (or every AI tab on a double press).
       event.preventDefault();
       event.stopPropagation();
 
-      copyResponse();
+      const now = Date.now();
+      const isDouble = doubleCopyAll && now - lastCopyPressAt < DOUBLE_PRESS_MS;
+      lastCopyPressAt = isDouble ? 0 : now;
+
+      if (isDouble) copyAll();
+      else copyResponse();
     },
     true
   );

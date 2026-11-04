@@ -1,5 +1,5 @@
 /**
- * AI Quick Copy v1.2
+ * AI Quick Copy v1.5
  * Responsibility: user settings shared by content scripts and the options page.
  *
  * Only settings are stored (chrome.storage.sync). Copied responses are never stored.
@@ -13,7 +13,17 @@
       gemini: "",
       grok: "",
       claude: ""
-    }
+    },
+    // AIs gathered by "copy all AI tabs" (Alt+C). Ctrl+C ignores this.
+    include: {
+      chatgpt: true,
+      gemini: true,
+      grok: true,
+      claude: true
+    },
+    // Pressing Ctrl+C / ⌘C twice quickly copies all AI tabs. Off by default:
+    // many people press Ctrl+C twice out of habit.
+    doubleCopyAll: false
   };
 
   const ROLE_MAX_LENGTH = 40;
@@ -31,16 +41,21 @@
 
   const withDefaults = (stored) => {
     const roles = { ...DEFAULTS.roles };
+    const include = { ...DEFAULTS.include };
 
     for (const id of Object.keys(roles)) {
       roles[id] = cleanRole(stored?.roles?.[id]);
+      // Settings saved before v1.5 have no `include`: everything is on.
+      include[id] = stored?.include?.[id] !== false;
     }
 
     return {
       blockMode: typeof stored?.blockMode === "boolean"
         ? stored.blockMode
         : DEFAULTS.blockMode,
-      roles
+      roles,
+      include,
+      doubleCopyAll: stored?.doubleCopyAll === true
     };
   };
 

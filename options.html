@@ -38,9 +38,26 @@
       </div>
       <div class="row">
         <span>Mặc định</span>
-        <span class="muted">Windows / Linux: <kbd>Alt</kbd><b>+</b><kbd>Shift</kbd><b>+</b><kbd>V</kbd>
-          &nbsp;·&nbsp; macOS: <kbd>⌥ Option</kbd><b>+</b><kbd>Shift</kbd><b>+</b><kbd>V</kbd></span>
+        <span class="muted">Windows / Linux: <kbd>Alt</kbd><b>+</b><kbd>C</kbd>
+          &nbsp;·&nbsp; macOS: <kbd>⌃ Control</kbd><b>+</b><kbd>C</kbd></span>
       </div>
+
+      <fieldset class="include">
+        <legend>Gom những AI nào <small>(bỏ tích = không gom AI đó; Ctrl+C copy 1 câu không bị ảnh hưởng)</small></legend>
+        <label><input type="checkbox" data-include="chatgpt"> 🟩 ChatGPT</label>
+        <label><input type="checkbox" data-include="gemini"> 🟦 Gemini</label>
+        <label><input type="checkbox" data-include="grok"> ⬛ Grok</label>
+        <label><input type="checkbox" data-include="claude"> 🟧 Claude</label>
+      </fieldset>
+
+      <label class="toggle double">
+        <input type="checkbox" id="doubleCopyAll">
+        <span>Nhấn <kbd>Ctrl</kbd><b>+</b><kbd>C</kbd> 2 lần liên tiếp (Mac: <kbd>⌘</kbd><b>+</b><kbd>C</kbd>) cũng copy tất cả tab AI</span>
+      </label>
+      <p class="note">
+        Chỉ dùng được trên trang AI, khi không bôi đen gì. Mặc định tắt, vì nhiều người quen tay nhấn Ctrl+C 2 lần.
+      </p>
+      <p id="allStatus" class="status" role="status"></p>
       <p class="note">
         Tab mở từ trước khi cài / cập nhật extension cần tải lại 1 lần mới được gom.
       </p>

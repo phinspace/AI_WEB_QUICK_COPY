@@ -160,3 +160,22 @@ button.secondary {
 }
 
 .note { margin: 10px 0 0; font-size: 13px; color: #6b7280; }
+
+.include {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+
+.include legend { width: 100%; }
+
+.include label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.include input, .double input { width: 16px; height: 16px; }
+.toggle.double { margin-top: 16px; font-weight: 500; }
+.toggle.double kbd { padding: 2px 6px; }

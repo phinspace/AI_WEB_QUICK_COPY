@@ -2,9 +2,9 @@
  * AI Quick Copy v1.5
  * Responsibility:
  * - open the settings page from the toolbar icon;
- * - "copy-all-latest" command (Alt+Shift+V): gather the latest response of
- *   every AI tab in the current window and put them on the clipboard in
- *   one copy, from the tab the user is on.
+ * - "copy all AI tabs" (Alt+C, macOS Control+C, or double Ctrl+C on an AI
+ *   page): gather the latest response of every ticked AI tab in the
+ *   current window and put them on the clipboard in one copy.
  */
 
 const COMMAND_COPY_ALL = "copy-all-latest";
@@ -20,13 +20,13 @@ const AI_TAB_URLS = [
   "https://claude.ai/*"
 ];
 
-const NAME_BY_HOST = {
-  "chatgpt.com": "CHATGPT",
-  "chat.openai.com": "CHATGPT",
-  "gemini.google.com": "GEMINI",
-  "grok.com": "GROK",
-  "x.com": "GROK",
-  "claude.ai": "CLAUDE"
+const AI_BY_HOST = {
+  "chatgpt.com": { id: "chatgpt", name: "CHATGPT" },
+  "chat.openai.com": { id: "chatgpt", name: "CHATGPT" },
+  "gemini.google.com": { id: "gemini", name: "GEMINI" },
+  "grok.com": { id: "grok", name: "GROK" },
+  "x.com": { id: "grok", name: "GROK" },
+  "claude.ai": { id: "claude", name: "CLAUDE" }
 };
 
 const BADGE_DURATION = 2500;
@@ -39,15 +39,34 @@ chrome.action.onClicked.addListener(() => {
 });
 
 chrome.commands.onCommand.addListener((command, tab) => {
-  if (command === COMMAND_COPY_ALL) copyAllLatest(tab);
+  if (command === COMMAND_COPY_ALL) copyAllFromCommand(tab);
 });
 
-function nameOf(tab) {
+// Double Ctrl+C on an AI page: the page asks for the text and writes the
+// clipboard itself, from the user's own key press.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type !== "aqc:copy-all" || !sender.tab) return false;
+
+  gather(sender.tab.windowId).then(sendResponse, () => sendResponse(null));
+  return true;
+});
+
+function aiOf(tab) {
   try {
     const host = new URL(tab.url).hostname.replace(/^www\./, "");
-    return NAME_BY_HOST[host] || host;
+    return AI_BY_HOST[host] || { id: "", name: host };
   } catch (_) {
-    return "AI";
+    return { id: "", name: "AI" };
+  }
+}
+
+// Only `include` is needed here; anything not explicitly unticked is on.
+async function loadInclude() {
+  try {
+    const { settings } = await chrome.storage.sync.get("settings");
+    return settings?.include || {};
+  } catch (_) {
+    return {};
   }
 }
 
@@ -97,7 +116,66 @@ function skipLines(skipped) {
     .filter(Boolean);
 }
 
-async function copyAllLatest(commandTab) {
+/**
+ * Gather the latest response of every included AI tab in `windowId`.
+ * Returns { text, message, kind, duration }; text is "" when nothing
+ * could be copied.
+ */
+async function gather(windowId) {
+  const include = await loadInclude();
+
+  // Only the window the user is in: other windows can hold unrelated chats.
+  const tabs = (await chrome.tabs.query(
+    windowId !== undefined ? { url: AI_TAB_URLS, windowId } : { url: AI_TAB_URLS, lastFocusedWindow: true }
+  )).sort((a, b) => a.index - b.index);
+
+  const wanted = tabs.filter((tab) => include[aiOf(tab).id] !== false);
+  const excluded = [...new Set(
+    tabs.filter((tab) => !wanted.includes(tab)).map((tab) => aiOf(tab).name)
+  )];
+
+  const results = await Promise.all(
+    wanted.map(async (tab) => ({
+      tab,
+      reply: tab.discarded ? { ok: false, reason: "discarded" } : await collect(tab)
+    }))
+  );
+
+  const copied = results.filter(({ reply }) => reply.ok && reply.text);
+  const skipped = results
+    .filter(({ reply }) => !(reply.ok && reply.text))
+    .map(({ tab, reply }) => ({ reason: reply.reason || "empty", name: reply.name || aiOf(tab).name }));
+
+  const extra = skipLines(skipped);
+  if (excluded.length) extra.push(`🚫 Đã bỏ tích trong cài đặt: ${excluded.join(", ")}`);
+
+  if (!copied.length) {
+    let headline = "Không lấy được câu trả lời AI nào trong cửa sổ này.";
+    if (!tabs.length) headline = "Cửa sổ này chưa mở tab ChatGPT / Gemini / Grok / Claude nào.";
+    else if (!wanted.length) headline = "Các AI đang mở đều đã bị bỏ tích trong cài đặt.";
+
+    return { text: "", message: [headline, ...extra].join("\n"), kind: "error", duration: 4500 };
+  }
+
+  const blockMode = copied.every(({ reply }) => reply.blockMode);
+  const text = copied
+    .map(({ reply }) => reply.text.trim())
+    .join(blockMode ? "\n\n" : "\n\n---\n\n") + "\n";
+
+  return {
+    text,
+    message: [
+      `⚡ Đã copy ${copied.length} câu trả lời`,
+      copied.map(({ reply }) => reply.title).join(" · "),
+      ...extra
+    ].join("\n"),
+    kind: extra.length ? "hint" : "success",
+    duration: extra.length ? 4500 : 2200
+  };
+}
+
+// Alt+C (macOS: Control+C), from any tab.
+async function copyAllFromCommand(commandTab) {
   if (copying) return;
   copying = true;
 
@@ -108,54 +186,8 @@ async function copyAllLatest(commandTab) {
       [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     }
 
-    // Only the window the user is in: other windows can hold unrelated chats.
-    const tabs = (await chrome.tabs.query({
-      url: AI_TAB_URLS,
-      ...(activeTab ? { windowId: activeTab.windowId } : { lastFocusedWindow: true })
-    })).sort((a, b) => a.index - b.index);
-
-    const results = await Promise.all(
-      tabs.map(async (tab) => ({
-        tab,
-        reply: tab.discarded ? { ok: false, reason: "discarded" } : await collect(tab)
-      }))
-    );
-
-    const copied = results.filter(({ reply }) => reply.ok && reply.text);
-    const skipped = results
-      .filter(({ reply }) => !(reply.ok && reply.text))
-      .map(({ tab, reply }) => ({ reason: reply.reason || "empty", name: reply.name || nameOf(tab) }));
-
-    if (!copied.length) {
-      const message = [
-        tabs.length
-          ? "Không lấy được câu trả lời AI nào trong cửa sổ này."
-          : "Cửa sổ này chưa mở tab ChatGPT / Gemini / Grok / Claude nào.",
-        ...skipLines(skipped)
-      ].join("\n");
-
-      await deliver(activeTab, "", message, "error");
-      return;
-    }
-
-    const blockMode = copied.every(({ reply }) => reply.blockMode);
-    const text = copied
-      .map(({ reply }) => reply.text.trim())
-      .join(blockMode ? "\n\n" : "\n\n---\n\n") + "\n";
-
-    const extra = skipLines(skipped);
-
-    await deliver(
-      activeTab,
-      text,
-      [
-        `⚡ Đã copy ${copied.length} câu trả lời`,
-        copied.map(({ reply }) => reply.title).join(" · "),
-        ...extra
-      ].join("\n"),
-      extra.length ? "hint" : "success",
-      extra.length ? 4500 : 2200
-    );
+    const result = await gather(activeTab?.windowId);
+    await deliver(activeTab, result.text, result.message, result.kind, result.duration);
   } catch (_) {
     await deliver(activeTab, "", "Không thể copy. Hãy thử lại.", "error");
   } finally {
