@@ -1,6 +1,6 @@
 # Privacy Policy — AI Quick Copy
 
-*Last updated: 2026-10-15*
+*Last updated: 2026-11-04*
 
 AI Quick Copy is a browser extension that copies the AI response you are reading on ChatGPT, Gemini, Grok, or Claude to your clipboard as Markdown.
 
@@ -11,7 +11,8 @@ AI Quick Copy is a browser extension that copies the AI response you are reading
 ## What the extension accesses
 
 - **Page content on supported sites only** (`chatgpt.com`, `chat.openai.com`, `gemini.google.com`, `grok.com`, `x.com`, `claude.ai`). When you press `Ctrl+C` (`⌘C` on macOS) with nothing selected, the extension reads the AI response on screen, converts it to Markdown inside the tab, and writes it to your clipboard. That text is never stored and never leaves your device.
-- **Your clipboard (write only).** The extension writes the converted Markdown to the clipboard when you press the shortcut. It never reads your clipboard.
+- **Copy all AI tabs (`Alt+Shift+V`).** When you press this shortcut, the extension asks each tab on the supported sites in the current window for its latest AI response, combines them, and writes the result to your clipboard from the tab you are on (that is the only use of the `activeTab` and `scripting` permissions). Nothing is read from that tab, and nothing is stored or sent anywhere.
+- **Your clipboard (write only).** The extension writes the converted Markdown to the clipboard when you press a shortcut. It never reads your clipboard.
 
 ## What the extension stores
 
@@ -23,7 +24,7 @@ Copied responses are never stored.
 
 - No accounts, API keys, or sign-in
 - No analytics, telemetry, tracking, or ads
-- No access to browsing history, cookies, bookmarks, or other websites
+- No access to browsing history, cookies, or bookmarks; no reading of other websites
 - No remote code: everything that runs is included in the extension package
 
 ## Changes

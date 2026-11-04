@@ -2,7 +2,7 @@
 
 > Copy the AI chat response you are reading as clean Markdown — just press `Ctrl+C` with nothing selected.
 
-![Version](https://img.shields.io/badge/version-1.4.1-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![Manifest](https://img.shields.io/badge/manifest-v3-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -27,6 +27,7 @@ AI Quick Copy is a lightweight Chrome / Edge extension that grabs the assistant 
 ## Features
 
 - **The shortcut you already know** — press `Ctrl+C` (`⌘C` on macOS) with nothing highlighted to copy the AI response you are reading. At the bottom of a chat that is the latest one; scroll up and it copies the older answer on screen.
+- **Copy every AI tab at once** — press `Alt+Shift+V` (`⌥ Option+Shift+V` on macOS) to copy the latest answer of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, each labeled with its AI. Ask the same question to several AIs, then gather all their answers into one Markdown file.
 - **Normal copy is untouched** — with text highlighted, or inside an input field, `Ctrl+C` copies exactly as it always does.
 - **Know who wrote what** — each copy is labeled with the AI's name (and an optional role) at the top and bottom, so answers from different AIs stay distinguishable in one file.
 - **Real Markdown, not plain text** — the response DOM is serialized into Markdown:
@@ -121,6 +122,16 @@ The extension is not yet published on the Chrome Web Store. Install it manually:
 
 3. A toast confirms the copy and shows which AI was detected. Paste into VS Code, Obsidian, Notion, or any Markdown editor.
 
+### Copy all AI tabs
+
+Press `Alt+Shift+V` (`⌥ Option+Shift+V` on macOS) from **any** tab:
+
+- The latest response of every ChatGPT, Gemini, Grok (`grok.com`, `x.com/i/grok`) and Claude tab **in the current window** is copied in one go, in tab order (several tabs of the same AI each give their own answer). Tabs in other browser windows are left out, so one window = one set of answers.
+- With identity blocks on, each answer has its own block, so you can tell them apart; with them off, answers are separated by `---`.
+- The toast lists what was copied, which tabs have no answer yet, and which tabs need a reload (tabs opened before installing or updating the extension).
+- The latest answer is always used, even if you scrolled up in that tab. Tabs the browser has put to sleep (discarded) are skipped.
+- Change the shortcut at `edge://extensions/shortcuts` (`chrome://extensions/shortcuts` in Chrome), or with the **Đổi phím tắt** button on the settings page. If the settings page shows *Chưa gán*, another extension already uses the key: pick another one there.
+
 ### What gets copied
 
 With nothing highlighted, `Ctrl+C` copies:
@@ -139,7 +150,9 @@ If no response can be recognized (for example after a site redesign), an orange 
 - No analytics or tracking
 - No external network requests
 - No access to history, cookies, or bookmarks
-- The only permission is `storage`, used to save your settings (identity block on/off and AI roles)
+- `storage` saves your settings (identity block on/off and AI roles)
+- `activeTab` + `scripting` are used only when you press `Alt+Shift+V`: the combined answers are written to the clipboard, and a confirmation toast shown, in the tab you are on
+- Host access is limited to the supported AI sites, to read their latest answer when you press `Alt+Shift+V`
 - Copied responses are never stored — they go straight to your clipboard
 
 Content scripts run only on the supported domains declared in [`manifest.json`](manifest.json). Responses are processed inside the tab and written directly to your clipboard.
@@ -159,8 +172,8 @@ Upload the zip to Microsoft Edge Add-ons or the Chrome Web Store. Listing text, 
 ```text
 .
 ├── manifest.json        # Extension declaration (Manifest V3)
-├── service-worker.js    # Toolbar icon opens settings
-├── content.js           # Orchestration + Ctrl+C / ⌘C handler
+├── service-worker.js    # Toolbar icon opens settings; Alt+Shift+V gathers all AI tabs
+├── content.js           # Orchestration, Ctrl+C / ⌘C handler, answers the service worker
 ├── core.js              # Shared DOM helpers, clipboard, toast
 ├── markdown.js          # DOM → Markdown serializer
 ├── block.js             # Wraps Markdown in an AI identity block
@@ -192,6 +205,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full data flow.
 - Refresh the AI tab after installing or updating the extension.
 - Make sure nothing is highlighted — with a selection, `Ctrl+C` does a normal copy.
 - Click outside the chat input before pressing the shortcut.
+
+**`Alt+Shift+V` does nothing / says a tab needs a reload**
+- Reload AI tabs opened before installing or updating the extension.
+- Check the shortcut on the settings page; if it shows *Chưa gán*, assign one at `edge://extensions/shortcuts`.
+- On browser pages (settings, new tab, the add-ons store) the toast cannot be shown and the copy cannot be made; the toolbar icon shows a red `!`. Switch to a normal web page or an AI tab and press it again.
 
 **"Không nhận diện được câu trả lời" (response not recognized) / wrong content copied**
 

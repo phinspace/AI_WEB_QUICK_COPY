@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AI Quick Copy",
-  "version": "1.4.1",
-  "description": "Copy the AI response you are reading as Markdown from ChatGPT, Gemini, Grok, or Claude.",
+  "version": "1.5.0",
+  "description": "Copy AI answers from ChatGPT, Gemini, Grok or Claude as Markdown: the one you're reading, or the latest of every AI tab.",
   "minimum_chrome_version": "110",
   "icons": {
     "16": "icons/icon16.png",
@@ -10,7 +10,19 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*",
+    "https://grok.com/*",
+    "https://x.com/*",
+    "https://claude.ai/*"
+  ],
   "background": {
     "service_worker": "service-worker.js"
   },
@@ -19,6 +31,15 @@
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png"
+    }
+  },
+  "commands": {
+    "copy-all-latest": {
+      "suggested_key": {
+        "default": "Alt+Shift+V",
+        "mac": "Alt+Shift+V"
+      },
+      "description": "Copy the latest response of every AI tab in this window"
     }
   },
   "options_page": "options.html",

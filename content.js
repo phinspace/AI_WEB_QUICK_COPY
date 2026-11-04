@@ -1,6 +1,6 @@
 /**
- * AI Quick Copy v1.1
- * Responsibility: route the copy action to the correct site adapter.
+ * AI Quick Copy v1.5
+ * Responsibility: route the copy actions to the correct site adapter.
  */
 
 (() => {
@@ -46,6 +46,34 @@
     return element ? { element, excerpt: false } : null;
   }
 
+  function identityOf(adapter, settings) {
+    return {
+      id: adapter.id,
+      name: adapter.name,
+      icon: adapter.icon,
+      role: settings.roles[adapter.id] || "",
+      host: window.location.hostname.replace(/^www\./, "")
+    };
+  }
+
+  // Markdown for one response, wrapped in an identity block when enabled.
+  function render(adapter, source, settings) {
+    const markdown = AQC.toMarkdown(source.element, {
+      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0
+    });
+
+    if (!markdown) return null;
+
+    const identity = identityOf(adapter, settings);
+
+    return {
+      identity,
+      text: settings.blockMode
+        ? AQC.toBlock(markdown, { ...identity, excerpt: source.excerpt })
+        : markdown
+    };
+  }
+
   async function copyResponse() {
     const now = Date.now();
 
@@ -67,39 +95,64 @@
     }
 
     const settings = await Settings.load();
+    const result = render(adapter, source, settings);
 
-    const markdown = AQC.toMarkdown(source.element, {
-      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0
-    });
-
-    if (!markdown) {
+    if (!result) {
       AQC.showToast(SELECT_HINT, "hint", HINT_DURATION);
       return;
     }
 
     if (!settings.blockMode) {
       await AQC.copyText(
-        markdown,
+        result.text,
         source.excerpt ? "⚡ Đã copy đoạn bôi đen · Markdown" : undefined
       );
       return;
     }
 
-    const identity = {
-      id: adapter.id,
-      name: adapter.name,
-      icon: adapter.icon,
-      role: settings.roles[adapter.id] || "",
-      host: window.location.hostname.replace(/^www\./, "")
-    };
-
     const copied = source.excerpt ? "Đã copy đoạn bôi đen" : "Đã copy";
 
     await AQC.copyText(
-      AQC.toBlock(markdown, { ...identity, excerpt: source.excerpt }),
-      `⚡ ${copied} · ${AQC.blockTitle(identity)}`
+      result.text,
+      `⚡ ${copied} · ${AQC.blockTitle(result.identity)}`
     );
   }
+
+  /**
+   * "Copy all AI tabs" (Alt+Shift+V): the service worker asks every AI tab
+   * for its latest response and copies them together. The latest one is
+   * used even when the user scrolled up, and selections are ignored.
+   */
+  async function collectLatest() {
+    const adapter = getAdapter();
+    if (!adapter) return { ok: false, reason: "unsupported" };
+
+    const element = AQC.pickLatest(AQC.innermost(adapter.findAll()));
+    const settings = await Settings.load();
+    const result = element && render(adapter, { element, excerpt: false }, settings);
+
+    if (!result) return { ok: false, reason: "empty", name: adapter.name };
+
+    return {
+      ok: true,
+      name: adapter.name,
+      title: AQC.blockTitle(result.identity),
+      blockMode: settings.blockMode,
+      text: result.text
+    };
+  }
+
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === "aqc:collect-latest") {
+      collectLatest().then(
+        sendResponse,
+        () => sendResponse({ ok: false, reason: "empty", name: getAdapter()?.name })
+      );
+      return true;
+    }
+
+    return false;
+  });
 
   function isEditable(element) {
     return (

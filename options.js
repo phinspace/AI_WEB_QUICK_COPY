@@ -80,8 +80,56 @@ function showVersion() {
   });
 }
 
+const COMMAND_COPY_ALL = "copy-all-latest";
+
+// "Alt+Shift+V" (Windows/Linux) or "⌥⇧V" (macOS) → one <kbd> per key.
+function shortcutKeys(shortcut) {
+  return shortcut.includes("+") ? shortcut.split("+") : [...shortcut];
+}
+
+async function showShortcut() {
+  const target = document.getElementById("allShortcut");
+  let shortcut = "";
+
+  try {
+    const commands = await chrome.commands.getAll();
+    shortcut = commands.find((c) => c.name === COMMAND_COPY_ALL)?.shortcut || "";
+  } catch (_) {}
+
+  target.replaceChildren();
+
+  if (!shortcut) {
+    // The suggested key was already taken (by the browser or another extension).
+    const unset = document.createElement("span");
+    unset.className = "unset";
+    unset.textContent = "Chưa gán — bấm “Đổi phím tắt” để chọn";
+    target.append(unset);
+    return;
+  }
+
+  shortcutKeys(shortcut).forEach((key, i) => {
+    if (i) {
+      const plus = document.createElement("b");
+      plus.textContent = "+";
+      target.append(plus);
+    }
+    const kbd = document.createElement("kbd");
+    kbd.textContent = key;
+    target.append(kbd);
+  });
+}
+
+function openShortcutSettings() {
+  // Edge redirects chrome:// to edge://.
+  chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+}
+
 async function init() {
   showVersion();
+  showShortcut();
+  document.getElementById("changeShortcut").addEventListener("click", openShortcutSettings);
+  // Pick up a shortcut changed in the browser settings.
+  window.addEventListener("focus", showShortcut);
 
   const settings = await Settings.load();
 

@@ -50,13 +50,16 @@ Each copy can be labeled with the AI's name and a role you choose (for example "
 YOUR NORMAL COPY IS UNTOUCHED
 With text highlighted, or while typing in a text box, Ctrl+C copies exactly as it always does. The extension only acts when the browser would copy nothing.
 
+COPY EVERY AI TAB AT ONCE
+Asked the same question to ChatGPT, Gemini, Grok and Claude? Press Alt+Shift+V (⌥ Option+Shift+V on macOS) from any tab and the latest answer of every AI tab in that window is copied in one go, each labeled with its AI.
+
 COPIES THE ANSWER ON SCREEN
 At the bottom of a chat it copies the latest answer; scroll up and it copies the older answer you are looking at.
 
 PRIVATE BY DESIGN
 • 100% local: no server, no account, no analytics, no network requests
 • Runs only on chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com and claude.ai
-• The only permission is "storage", to save your settings
+• "storage" saves your settings; "activeTab" and "scripting" only write the clipboard when you press Alt+Shift+V
 • Copied answers are never stored
 
 Open source (MIT): https://github.com/phinspace/AI_WEB_QUICK_COPY
@@ -84,13 +87,16 @@ Mỗi lần copy có thể kèm tên AI và vai trò bạn đặt (ví dụ "Th�
 KHÔNG ẢNH HƯỞNG CÁCH COPY BÌNH THƯỜNG
 Khi đang bôi đen chữ hoặc đang gõ trong ô nhập, Ctrl+C vẫn copy như thường. Extension chỉ làm việc khi trình duyệt không có gì để copy.
 
+COPY TẤT CẢ TAB AI CÙNG LÚC
+Hỏi cùng 1 câu cho ChatGPT, Gemini, Grok và Claude? Ở bất kỳ tab nào, nhấn Alt+Shift+V (⌥ Option+Shift+V trên macOS) là câu trả lời mới nhất của mọi tab AI trong cửa sổ đó được copy cùng lúc, mỗi đoạn có tên AI.
+
 COPY ĐÚNG CÂU TRẢ LỜI ĐANG XEM
 Ở cuối cuộc trò chuyện thì copy câu mới nhất; cuộn lên thì copy câu trả lời cũ đang nằm trên màn hình.
 
 RIÊNG TƯ TUYỆT ĐỐI
 • Chạy 100% trên máy: không server, không tài khoản, không thống kê, không gửi dữ liệu đi đâu
 • Chỉ chạy trên chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com và claude.ai
-• Quyền duy nhất là "storage", để lưu cài đặt
+• "storage" để lưu cài đặt; "activeTab" và "scripting" chỉ dùng để ghi clipboard khi bạn nhấn Alt+Shift+V
 • Không bao giờ lưu nội dung đã copy
 
 Mã nguồn mở (MIT): https://github.com/phinspace/AI_WEB_QUICK_COPY
@@ -103,14 +109,15 @@ AI Quick Copy là dự án độc lập, không liên kết với OpenAI, Google
 | Question | Answer |
 |---|---|
 | Does the extension collect or transmit personal information? | **No** |
-| Single purpose | Copy the AI chat response the user is reading on supported AI chat sites to the clipboard as Markdown. |
+| Single purpose | Copy AI chat responses from supported AI chat sites to the clipboard as Markdown (the response being read, or the latest response of each AI tab in the current window). |
 | Remote code | **No**, all code is in the package |
 | Data sold or shared with third parties | **No** |
 
 ### Permission justifications
 
 - **`storage`**: Saves the user's settings (identity blocks on/off and an optional role name per AI). No browsing data or copied content is stored.
-- **Host access (chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com, claude.ai)**: The content script reads the AI response on the page when the user presses Ctrl+C / ⌘C with nothing selected, converts it to Markdown locally, and writes it to the clipboard. It runs on no other sites.
+- **Host access (chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com, claude.ai)**: The content script reads the AI response on the page when the user presses Ctrl+C / ⌘C with nothing selected, converts it to Markdown locally, and writes it to the clipboard. When the user presses Alt+Shift+V, the service worker finds the tabs on these sites in the current window and asks each for its latest response. It runs on no other sites.
+- **`activeTab`** and **`scripting`**: Only when the user presses the Alt+Shift+V command, a small function is run in the current tab to write the combined responses to the clipboard and show a confirmation toast (a service worker cannot access the clipboard). It reads nothing from that page.
 
 ## Notes for certification (reviewers)
 
@@ -121,6 +128,7 @@ How to test:
 3. Click on an empty area of the page so nothing is selected, then press Ctrl+C (Cmd+C on macOS).
 4. A toast confirms the copy. Paste into any text editor: the answer is Markdown.
 Highlighting text and pressing Ctrl+C performs a normal browser copy.
+Copy all AI tabs: open two AI sites in separate tabs (e.g. chatgpt.com and gemini.google.com), ask a question in each, then press Alt+Shift+V (Option+Shift+V on macOS) from any tab. A toast lists the AIs copied; the clipboard holds both answers, one block per AI.
 Clicking the toolbar icon opens the settings page.
 No account, login or network access is required by the extension itself.
 ```

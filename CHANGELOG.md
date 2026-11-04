@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.5.0
+- New: **Copy all AI tabs** — press `Alt+Shift+V` (`⌥ Option+Shift+V` on macOS) to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. Works from any tab, even one that is not an AI site.
+- The toast lists which AIs were copied, which tabs have no response yet, and which tabs must be reloaded (tabs opened before the extension was installed or updated).
+- On x.com only Grok pages (`x.com/i/grok`) are gathered, so posts are never copied by mistake.
+- Settings page: new "Copy tất cả tab AI" card showing the current shortcut (or that it is unassigned) with a button to change it.
+- New permissions `activeTab` and `scripting`, used only to write the clipboard and show the toast in the tab you are on when you press the shortcut. Neither adds an install warning.
+
 ## 1.4.1
 - Added the extension icon (toolbar, extensions page and store listing).
 - The settings page shows the current shortcut (`Ctrl+C` / `⌘C`) and reads its version from the manifest instead of a hard-coded `v1.3.1`.

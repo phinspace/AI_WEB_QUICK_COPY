@@ -8,11 +8,12 @@
 </head>
 <body>
   <main class="shell">
-    <div class="badge">AI QUICK COPY · <span data-version>v1.4.1</span></div>
+    <div class="badge">AI QUICK COPY · <span data-version>v1.5.0</span></div>
     <h1>Settings</h1>
     <p>Không bôi đen gì, nhấn Ctrl+C để copy câu trả lời AI đang xem dưới dạng Markdown.</p>
 
     <section class="card">
+      <h2>Copy câu đang xem</h2>
       <div class="row">
         <span>Windows / Linux</span>
         <kbd>Ctrl</kbd><b>+</b><kbd>C</kbd>
@@ -21,6 +22,31 @@
         <span>macOS</span>
         <kbd>⌘ Command</kbd><b>+</b><kbd>C</kbd>
       </div>
+    </section>
+
+    <section class="card">
+      <h2>Copy tất cả tab AI</h2>
+      <p>
+        Ấn 1 lần là gom câu trả lời <strong>mới nhất</strong> của các tab ChatGPT, Gemini, Grok, Claude
+        <strong>trong cửa sổ đang dùng</strong> vào cùng 1 lần copy, theo thứ tự tab. Tab ở cửa sổ khác không bị gom.
+        Dùng được ở bất kỳ tab nào, kể cả khi đang không mở trang AI.
+      </p>
+      <div class="row">
+        <span>Phím tắt</span>
+        <span id="allShortcut" class="shortcut"></span>
+        <button type="button" id="changeShortcut" class="secondary">Đổi phím tắt</button>
+      </div>
+      <div class="row">
+        <span>Mặc định</span>
+        <span class="muted">Windows / Linux: <kbd>Alt</kbd><b>+</b><kbd>Shift</kbd><b>+</b><kbd>V</kbd>
+          &nbsp;·&nbsp; macOS: <kbd>⌥ Option</kbd><b>+</b><kbd>Shift</kbd><b>+</b><kbd>V</kbd></span>
+      </div>
+      <p class="note">
+        Tab mở từ trước khi cài / cập nhật extension cần tải lại 1 lần mới được gom.
+      </p>
+    </section>
+
+    <section class="card">
       <div class="row">
         <span>Output</span>
         <strong>Markdown</strong>
@@ -77,7 +103,7 @@
       </p>
     </section>
 
-    <footer>AI Quick Copy <span data-version>v1.4.1</span></footer>
+    <footer>AI Quick Copy <span data-version>v1.5.0</span></footer>
   </main>
   <script src="settings.js"></script>
   <script src="options.js"></script>
