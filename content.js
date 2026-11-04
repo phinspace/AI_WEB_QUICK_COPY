@@ -138,15 +138,28 @@
 
   // The service worker gathers the AI tabs of this window; the clipboard is
   // written here, from the user's key press.
+  let copyAllPending = false;
+
   async function copyAll() {
+    if (copyAllPending) return;
+    copyAllPending = true;
+
     let result = null;
 
     try {
       result = await chrome.runtime.sendMessage({ type: "aqc:copy-all" });
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      copyAllPending = false;
+    }
 
+    // The first press already copied the answer on screen.
     if (!result) {
-      AQC.showToast("Không thể copy. Hãy thử lại.", "error");
+      AQC.showToast(
+        "Không copy được tất cả tab AI.\nClipboard vẫn giữ câu trả lời đang xem.",
+        "error",
+        HINT_DURATION
+      );
       return;
     }
 

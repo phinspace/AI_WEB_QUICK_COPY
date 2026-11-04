@@ -83,7 +83,7 @@ async function save() {
 }
 
 function onChange(event) {
-  statusTarget = event.target.closest("#roles, #blockMode") || event.target === blockModeInput
+  statusTarget = event.target.closest("#roles, #blockMode")
     ? status
     : allStatus;
   renderPreview(readForm());
@@ -102,7 +102,7 @@ function showVersion() {
 
 const COMMAND_COPY_ALL = "copy-all-latest";
 
-// "Alt+C" (Windows/Linux) or "⌃C" (macOS) → one <kbd> per key.
+// "Alt+C" (Windows/Linux) or "⌃⇧C" (macOS) → one <kbd> per key.
 function shortcutKeys(shortcut) {
   return shortcut.includes("+") ? shortcut.split("+") : [...shortcut];
 }

@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 
 ## 1.5.0
-- New: **Copy all AI tabs** — press `Alt+C` (`⌃ Control+C` on macOS) to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. Works from any tab, even one that is not an AI site.
+- New: **Copy all AI tabs** — press `Alt+C` (`⌃ Control+Shift+C` on macOS) to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. Works from any tab, even one that is not an AI site.
 - Choose which AIs are gathered: untick an AI in the settings (e.g. Gemini) and copy-all leaves it out; the toast names it. All are ticked by default; the single-answer `Ctrl+C` is not affected.
 - Optional: press `Ctrl+C` (`⌘C`) twice quickly on an AI page, with nothing selected, to copy all AI tabs. Off by default, since many people press `Ctrl+C` twice by habit. A single press still copies the answer on screen.
 - The toast lists which AIs were copied and why any tab was skipped: no response yet, still loading, asleep, not responding within 2 seconds, or needs a reload (opened before the extension was installed or updated). A stuck tab never holds up the copy.

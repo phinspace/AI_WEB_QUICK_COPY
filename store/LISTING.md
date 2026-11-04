@@ -51,7 +51,7 @@ YOUR NORMAL COPY IS UNTOUCHED
 With text highlighted, or while typing in a text box, Ctrl+C copies exactly as it always does. The extension only acts when the browser would copy nothing.
 
 COPY EVERY AI TAB AT ONCE
-Asked the same question to ChatGPT, Gemini, Grok and Claude? Press Alt+C (⌃ Control+C on macOS) from any tab and the latest answer of every AI tab in that window is copied in one go, each labeled with its AI. Untick the AIs you don't want in the settings.
+Asked the same question to ChatGPT, Gemini, Grok and Claude? Press Alt+C (⌃ Control+Shift+C on macOS) from any tab and the latest answer of every AI tab in that window is copied in one go, each labeled with its AI. Untick the AIs you don't want in the settings.
 
 COPIES THE ANSWER ON SCREEN
 At the bottom of a chat it copies the latest answer; scroll up and it copies the older answer you are looking at.
@@ -88,7 +88,7 @@ KHÔNG ẢNH HƯỞNG CÁCH COPY BÌNH THƯỜNG
 Khi đang bôi đen chữ hoặc đang gõ trong ô nhập, Ctrl+C vẫn copy như thường. Extension chỉ làm việc khi trình duyệt không có gì để copy.
 
 COPY TẤT CẢ TAB AI CÙNG LÚC
-Hỏi cùng 1 câu cho ChatGPT, Gemini, Grok và Claude? Ở bất kỳ tab nào, nhấn Alt+C (⌃ Control+C trên macOS) là câu trả lời mới nhất của mọi tab AI trong cửa sổ đó được copy cùng lúc, mỗi đoạn có tên AI. Bỏ tích AI bạn không muốn gom trong phần cài đặt.
+Hỏi cùng 1 câu cho ChatGPT, Gemini, Grok và Claude? Ở bất kỳ tab nào, nhấn Alt+C (⌃ Control+Shift+C trên macOS) là câu trả lời mới nhất của mọi tab AI trong cửa sổ đó được copy cùng lúc, mỗi đoạn có tên AI. Bỏ tích AI bạn không muốn gom trong phần cài đặt.
 
 COPY ĐÚNG CÂU TRẢ LỜI ĐANG XEM
 Ở cuối cuộc trò chuyện thì copy câu mới nhất; cuộn lên thì copy câu trả lời cũ đang nằm trên màn hình.
@@ -128,7 +128,7 @@ How to test:
 3. Click on an empty area of the page so nothing is selected, then press Ctrl+C (Cmd+C on macOS).
 4. A toast confirms the copy. Paste into any text editor: the answer is Markdown.
 Highlighting text and pressing Ctrl+C performs a normal browser copy.
-Copy all AI tabs: open two AI sites in separate tabs (e.g. chatgpt.com and gemini.google.com), ask a question in each, then press Alt+C (Control+C on macOS, not Command+C) from any tab. A toast lists the AIs copied; the clipboard holds both answers, one block per AI.
+Copy all AI tabs: open two AI sites in separate tabs (e.g. chatgpt.com and gemini.google.com), ask a question in each, then press Alt+C (Control+Shift+C on macOS) from any tab. A toast lists the AIs copied; the clipboard holds both answers, one block per AI.
 Clicking the toolbar icon opens the settings page.
 No account, login or network access is required by the extension itself.
 ```

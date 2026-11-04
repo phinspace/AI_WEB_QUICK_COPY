@@ -89,7 +89,7 @@ Ctrl+C / ⌘C
 
 `Ctrl+C` is deliberately not a browser command (one would take over copy on every website), and the extension only acts when the browser would copy nothing. A 500ms guard prevents duplicate execution. The only browser command is `Alt+C` (below).
 
-## Copy all AI tabs (`Alt+C` / macOS `Control+C`, or double `Ctrl+C`)
+## Copy all AI tabs (`Alt+C` / macOS `Control+Shift+C`, or double `Ctrl+C`)
 
 ```text
 chrome.commands "copy-all-latest"        double Ctrl+C in content.js (opt-in)

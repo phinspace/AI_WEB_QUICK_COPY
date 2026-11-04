@@ -174,7 +174,7 @@ async function gather(windowId) {
   };
 }
 
-// Alt+C (macOS: Control+C), from any tab.
+// Alt+C (macOS: Control+Shift+C), from any tab.
 async function copyAllFromCommand(commandTab) {
   if (copying) return;
   copying = true;

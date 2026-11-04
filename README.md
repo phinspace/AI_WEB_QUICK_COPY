@@ -27,7 +27,7 @@ AI Quick Copy is a lightweight Chrome / Edge extension that grabs the assistant 
 ## Features
 
 - **The shortcut you already know** — press `Ctrl+C` (`⌘C` on macOS) with nothing highlighted to copy the AI response you are reading. At the bottom of a chat that is the latest one; scroll up and it copies the older answer on screen.
-- **Copy every AI tab at once** — press `Alt+C` (`⌃ Control+C` on macOS) to copy the latest answer of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, each labeled with its AI. Ask the same question to several AIs, then gather all their answers into one Markdown file.
+- **Copy every AI tab at once** — press `Alt+C` (`⌃ Control+Shift+C` on macOS) to copy the latest answer of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, each labeled with its AI. Ask the same question to several AIs, then gather all their answers into one Markdown file.
 - **Normal copy is untouched** — with text highlighted, or inside an input field, `Ctrl+C` copies exactly as it always does.
 - **Know who wrote what** — each copy is labeled with the AI's name (and an optional role) at the top and bottom, so answers from different AIs stay distinguishable in one file.
 - **Real Markdown, not plain text** — the response DOM is serialized into Markdown:
@@ -124,7 +124,7 @@ The extension is not yet published on the Chrome Web Store. Install it manually:
 
 ### Copy all AI tabs
 
-Press `Alt+C` (`⌃ Control+C` on macOS) from **any** tab:
+Press `Alt+C` (`⌃ Control+Shift+C` on macOS) from **any** tab:
 
 - The latest response of every ChatGPT, Gemini, Grok (`grok.com`, `x.com/i/grok`) and Claude tab **in the current window** is copied in one go, in tab order (several tabs of the same AI each give their own answer). Tabs in other browser windows are left out, so one window = one set of answers.
 - With identity blocks on, each answer has its own block, so you can tell them apart; with them off, answers are separated by `---`.
@@ -134,7 +134,8 @@ Press `Alt+C` (`⌃ Control+C` on macOS) from **any** tab:
 - AI sites installed as apps open in their own window, so they are not gathered from a normal browser window.
 - **Choose the AIs:** on the settings page, untick an AI (e.g. Gemini) to leave it out of copy-all. The toast names AIs left out. All are ticked by default; `Ctrl+C` on a single page is not affected.
 - **Optional double `Ctrl+C`:** turn on *Nhấn Ctrl+C 2 lần liên tiếp* in the settings, then on an AI page, with nothing selected, press `Ctrl+C` (`⌘C`) twice quickly to copy all AI tabs. One press still copies the answer on screen. Off by default.
-- On macOS the shortcut is `Control+C` (the ⌃ key), not `⌘C`: `⌘C` stays the normal copy.
+- On macOS the shortcut is `Control+Shift+C` (the ⌃ key): `⌘C` stays the normal copy, and `⌃C` stays free to stop programs in web terminals.
+- A browser shortcut works on every site. If `Alt+C` clashes with a web app you use (e.g. "match case" in vscode.dev), change it at the shortcuts page.
 - Change the shortcut at `edge://extensions/shortcuts` (`chrome://extensions/shortcuts` in Chrome), or with the **Đổi phím tắt** button on the settings page. If the settings page shows *Chưa gán*, another extension already uses the key: pick another one there.
 
 ### What gets copied
