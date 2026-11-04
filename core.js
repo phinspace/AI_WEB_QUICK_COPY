@@ -291,7 +291,11 @@
       .trim();
   };
 
-  root.copyText = async (text, successMessage = "⚡ Đã copy AI response · Markdown") => {
+  root.copyText = async (
+    text,
+    successMessage = "⚡ Đã copy AI response · Markdown",
+    { type = "success", duration } = {}
+  ) => {
     if (!text) {
       root.showToast("Không tìm thấy nội dung để copy.", "error");
       return false;
@@ -299,7 +303,7 @@
 
     try {
       await navigator.clipboard.writeText(text);
-      root.showToast(successMessage);
+      root.showToast(successMessage, type, duration);
       return true;
     } catch (_) {
       try {
@@ -317,7 +321,7 @@
         textarea.remove();
 
         if (ok) {
-          root.showToast(successMessage);
+          root.showToast(successMessage, type, duration);
           return true;
         }
       } catch (_) {}

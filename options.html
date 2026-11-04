@@ -8,11 +8,12 @@
 </head>
 <body>
   <main class="shell">
-    <div class="badge">AI QUICK COPY · <span data-version>v1.4.1</span></div>
+    <div class="badge">AI QUICK COPY · <span data-version>v1.5.0</span></div>
     <h1>Settings</h1>
     <p>Không bôi đen gì, nhấn Ctrl+C để copy câu trả lời AI đang xem dưới dạng Markdown.</p>
 
     <section class="card">
+      <h2>Copy câu đang xem</h2>
       <div class="row">
         <span>Windows / Linux</span>
         <kbd>Ctrl</kbd><b>+</b><kbd>C</kbd>
@@ -21,6 +22,49 @@
         <span>macOS</span>
         <kbd>⌘ Command</kbd><b>+</b><kbd>C</kbd>
       </div>
+    </section>
+
+    <section class="card">
+      <h2>Copy tất cả tab AI</h2>
+      <p>
+        Trên trang AI, không bôi đen gì, nhấn nhanh <kbd>Ctrl</kbd><b>+</b><kbd>C</kbd> <strong>2 lần</strong>
+        (Mac: <kbd>⌘</kbd><b>+</b><kbd>C</kbd> 2 lần) để gom câu trả lời <strong>mới nhất</strong> của các tab
+        ChatGPT, Gemini, Grok, Claude <strong>trong cửa sổ đang dùng</strong> vào 1 lần copy, theo thứ tự tab.
+        Tab ở cửa sổ khác không bị gom.
+      </p>
+      <div class="row">
+        <span>Phím tắt (tuỳ chọn, dùng ở mọi tab)</span>
+        <span id="allShortcut" class="shortcut"></span>
+        <button type="button" id="changeShortcut" class="secondary">Đổi phím tắt</button>
+      </div>
+      <div class="row">
+        <span>Mặc định</span>
+        <span class="muted">Windows / Linux: <kbd>Alt</kbd><b>+</b><kbd>C</kbd>
+          &nbsp;·&nbsp; macOS: <kbd>⌃ Control</kbd><b>+</b><kbd>Shift</kbd><b>+</b><kbd>C</kbd></span>
+      </div>
+
+      <fieldset class="include">
+        <legend>Gom những AI nào <small>(bỏ tích = không gom AI đó; Ctrl+C copy 1 câu không bị ảnh hưởng)</small></legend>
+        <label><input type="checkbox" data-include="chatgpt"> 🟩 ChatGPT</label>
+        <label><input type="checkbox" data-include="gemini"> 🟦 Gemini</label>
+        <label><input type="checkbox" data-include="grok"> ⬛ Grok</label>
+        <label><input type="checkbox" data-include="claude"> 🟧 Claude</label>
+      </fieldset>
+
+      <label class="toggle double">
+        <input type="checkbox" id="doubleCopyAll">
+        <span>Nhấn <kbd>Ctrl</kbd><b>+</b><kbd>C</kbd> 2 lần liên tiếp (Mac: <kbd>⌘</kbd><b>+</b><kbd>C</kbd>) cũng copy tất cả tab AI</span>
+      </label>
+      <p class="note">
+        Chỉ dùng được trên trang AI, khi không bôi đen gì. Mặc định bật. Nhấn 1 lần vẫn copy câu đang xem; nhấn nhanh 2 lần trở lên thì copy tất cả. Tắt đi nếu bạn chỉ muốn copy 1 câu.
+      </p>
+      <p id="allStatus" class="status" role="status"></p>
+      <p class="note">
+        Tab mở từ trước khi cài / cập nhật extension cần tải lại 1 lần mới được gom.
+      </p>
+    </section>
+
+    <section class="card">
       <div class="row">
         <span>Output</span>
         <strong>Markdown</strong>
@@ -77,7 +121,7 @@
       </p>
     </section>
 
-    <footer>AI Quick Copy <span data-version>v1.4.1</span></footer>
+    <footer>AI Quick Copy <span data-version>v1.5.0</span></footer>
   </main>
   <script src="settings.js"></script>
   <script src="options.js"></script>

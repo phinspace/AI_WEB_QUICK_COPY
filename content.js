@@ -1,6 +1,6 @@
 /**
- * AI Quick Copy v1.1
- * Responsibility: route the copy action to the correct site adapter.
+ * AI Quick Copy v1.5
+ * Responsibility: route the copy actions to the correct site adapter.
  */
 
 (() => {
@@ -46,6 +46,34 @@
     return element ? { element, excerpt: false } : null;
   }
 
+  function identityOf(adapter, settings) {
+    return {
+      id: adapter.id,
+      name: adapter.name,
+      icon: adapter.icon,
+      role: settings.roles[adapter.id] || "",
+      host: window.location.hostname.replace(/^www\./, "")
+    };
+  }
+
+  // Markdown for one response, wrapped in an identity block when enabled.
+  function render(adapter, source, settings) {
+    const markdown = AQC.toMarkdown(source.element, {
+      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0
+    });
+
+    if (!markdown) return null;
+
+    const identity = identityOf(adapter, settings);
+
+    return {
+      identity,
+      text: settings.blockMode
+        ? AQC.toBlock(markdown, { ...identity, excerpt: source.excerpt })
+        : markdown
+    };
+  }
+
   async function copyResponse() {
     const now = Date.now();
 
@@ -67,39 +95,122 @@
     }
 
     const settings = await Settings.load();
+    const result = render(adapter, source, settings);
 
-    const markdown = AQC.toMarkdown(source.element, {
-      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0
-    });
-
-    if (!markdown) {
+    if (!result) {
       AQC.showToast(SELECT_HINT, "hint", HINT_DURATION);
       return;
     }
 
     if (!settings.blockMode) {
       await AQC.copyText(
-        markdown,
+        result.text,
         source.excerpt ? "⚡ Đã copy đoạn bôi đen · Markdown" : undefined
       );
       return;
     }
 
-    const identity = {
-      id: adapter.id,
-      name: adapter.name,
-      icon: adapter.icon,
-      role: settings.roles[adapter.id] || "",
-      host: window.location.hostname.replace(/^www\./, "")
-    };
-
     const copied = source.excerpt ? "Đã copy đoạn bôi đen" : "Đã copy";
 
     await AQC.copyText(
-      AQC.toBlock(markdown, { ...identity, excerpt: source.excerpt }),
-      `⚡ ${copied} · ${AQC.blockTitle(identity)}`
+      result.text,
+      `⚡ ${copied} · ${AQC.blockTitle(result.identity)}`
     );
   }
+
+  // Double Ctrl+C / ⌘C (on by default): the second press within this delay
+  // copies all AI tabs instead of the answer on screen. Every further quick
+  // press stays "all", so pressing 3 times out of habit gives the same result.
+  const DOUBLE_PRESS_MS = 450;
+  let lastCopyPressAt = 0;
+  let doubleCopyAll = Settings.DEFAULTS.doubleCopyAll;
+
+  Settings.load().then((settings) => {
+    doubleCopyAll = settings.doubleCopyAll;
+  });
+
+  try {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === "sync" && changes.settings) {
+        const value = changes.settings.newValue?.doubleCopyAll;
+        doubleCopyAll = typeof value === "boolean" ? value : Settings.DEFAULTS.doubleCopyAll;
+      }
+    });
+  } catch (_) {}
+
+  // The service worker gathers the AI tabs of this window; the clipboard is
+  // written here, from the user's key press.
+  let copyAllPending = false;
+
+  async function copyAll() {
+    if (copyAllPending) return;
+    copyAllPending = true;
+
+    let result = null;
+
+    try {
+      result = await chrome.runtime.sendMessage({ type: "aqc:copy-all" });
+    } catch (_) {
+    } finally {
+      copyAllPending = false;
+    }
+
+    // The first press already copied the answer on screen.
+    if (!result) {
+      AQC.showToast(
+        "Không copy được tất cả tab AI.\nClipboard vẫn giữ câu trả lời đang xem.",
+        "error",
+        HINT_DURATION
+      );
+      return;
+    }
+
+    if (!result.text) {
+      AQC.showToast(result.message, result.kind, result.duration);
+      return;
+    }
+
+    await AQC.copyText(result.text, result.message, {
+      type: result.kind,
+      duration: result.duration
+    });
+  }
+
+  /**
+   * "Copy all AI tabs" (Alt+C, or double Ctrl+C): the service worker asks every AI tab
+   * for its latest response and copies them together. The latest one is
+   * used even when the user scrolled up, and selections are ignored.
+   */
+  async function collectLatest() {
+    const adapter = getAdapter();
+    if (!adapter) return { ok: false, reason: "unsupported" };
+
+    const element = AQC.pickLatest(AQC.innermost(adapter.findAll()));
+    const settings = await Settings.load();
+    const result = element && render(adapter, { element, excerpt: false }, settings);
+
+    if (!result) return { ok: false, reason: "empty", name: adapter.name };
+
+    return {
+      ok: true,
+      name: adapter.name,
+      title: AQC.blockTitle(result.identity),
+      blockMode: settings.blockMode,
+      text: result.text
+    };
+  }
+
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === "aqc:collect-latest") {
+      collectLatest().then(
+        sendResponse,
+        () => sendResponse({ ok: false, reason: "empty", name: getAdapter()?.name })
+      );
+      return true;
+    }
+
+    return false;
+  });
 
   function isEditable(element) {
     return (
@@ -137,11 +248,16 @@
       if (hasSelection()) return;
 
       // Nothing highlighted: the browser would copy nothing, so copy the
-      // response on screen instead.
+      // response on screen instead (or every AI tab on a double press).
       event.preventDefault();
       event.stopPropagation();
 
-      copyResponse();
+      const now = Date.now();
+      const isDouble = doubleCopyAll && now - lastCopyPressAt < DOUBLE_PRESS_MS;
+      lastCopyPressAt = now;
+
+      if (isDouble) copyAll();
+      else copyResponse();
     },
     true
   );
