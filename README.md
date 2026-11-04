@@ -129,7 +129,9 @@ Press `Alt+Shift+V` (`⌥ Option+Shift+V` on macOS) from **any** tab:
 - The latest response of every ChatGPT, Gemini, Grok (`grok.com`, `x.com/i/grok`) and Claude tab **in the current window** is copied in one go, in tab order (several tabs of the same AI each give their own answer). Tabs in other browser windows are left out, so one window = one set of answers.
 - With identity blocks on, each answer has its own block, so you can tell them apart; with them off, answers are separated by `---`.
 - The toast lists what was copied, which tabs have no answer yet, and which tabs need a reload (tabs opened before installing or updating the extension).
-- The latest answer is always used, even if you scrolled up in that tab. Tabs the browser has put to sleep (discarded) are skipped.
+- The latest answer is always used, even if you scrolled up in that tab.
+- Tabs that are asleep, still loading or not responding within 2 seconds are skipped and named in the toast, so one stuck tab never holds up the copy.
+- AI sites installed as apps open in their own window, so they are not gathered from a normal browser window.
 - Change the shortcut at `edge://extensions/shortcuts` (`chrome://extensions/shortcuts` in Chrome), or with the **Đổi phím tắt** button on the settings page. If the settings page shows *Chưa gán*, another extension already uses the key: pick another one there.
 
 ### What gets copied
@@ -210,6 +212,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full data flow.
 - Reload AI tabs opened before installing or updating the extension.
 - Check the shortcut on the settings page; if it shows *Chưa gán*, assign one at `edge://extensions/shortcuts`.
 - On browser pages (settings, new tab, the add-ons store) the toast cannot be shown and the copy cannot be made; the toolbar icon shows a red `!`. Switch to a normal web page or an AI tab and press it again.
+- "Không thể copy — bấm vào trang": the address bar or DevTools had focus. Click the page and press it again.
 
 **"Không nhận diện được câu trả lời" (response not recognized) / wrong content copied**
 

@@ -51,52 +51,90 @@ function nameOf(tab) {
   }
 }
 
+// A tab that is frozen or busy must not hold up the whole copy.
+const COLLECT_TIMEOUT = 2000;
+
 // Ask one tab for its latest response. A tab opened before the extension
 // was installed or updated has no content script and does not answer.
 async function collect(tab) {
+  if (tab.status === "loading") return { ok: false, reason: "loading" };
+
+  let timer;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve({ ok: false, reason: "timeout" }), COLLECT_TIMEOUT);
+  });
+
   try {
-    const reply = await chrome.tabs.sendMessage(tab.id, { type: "aqc:collect-latest" });
+    const reply = await Promise.race([
+      chrome.tabs.sendMessage(tab.id, { type: "aqc:collect-latest" }),
+      timeout
+    ]);
     return reply || { ok: false, reason: "no-script" };
   } catch (_) {
     return { ok: false, reason: "no-script" };
+  } finally {
+    clearTimeout(timer);
   }
+}
+
+// Toast lines for the tabs that gave no answer, grouped by reason.
+const SKIP_LABELS = {
+  empty: "⚠️ Chưa có câu trả lời",
+  loading: "⏳ Đang tải, thử lại sau giây lát",
+  timeout: "⌛ Không phản hồi",
+  "no-script": "↻ Cần tải lại tab",
+  discarded: "💤 Tab đang ngủ, mở tab đó rồi thử lại"
+};
+
+function skipLines(skipped) {
+  return Object.keys(SKIP_LABELS)
+    .map((reason) => {
+      const names = skipped
+        .filter((item) => item.reason === reason)
+        .map((item) => item.name);
+      return names.length ? `${SKIP_LABELS[reason]}: ${names.join(", ")}` : null;
+    })
+    .filter(Boolean);
 }
 
 async function copyAllLatest(commandTab) {
   if (copying) return;
   copying = true;
 
+  let activeTab = commandTab;
+
   try {
-    const activeTab = commandTab?.id !== undefined
-      ? commandTab
-      : (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0];
+    if (activeTab?.id === undefined) {
+      [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    }
 
     // Only the window the user is in: other windows can hold unrelated chats.
     const tabs = (await chrome.tabs.query({
       url: AI_TAB_URLS,
       ...(activeTab ? { windowId: activeTab.windowId } : { lastFocusedWindow: true })
-    }))
-      .filter((tab) => !tab.discarded)
-      .sort((a, b) => a.index - b.index);
+    })).sort((a, b) => a.index - b.index);
 
     const results = await Promise.all(
-      tabs.map(async (tab) => ({ tab, reply: await collect(tab) }))
+      tabs.map(async (tab) => ({
+        tab,
+        reply: tab.discarded ? { ok: false, reason: "discarded" } : await collect(tab)
+      }))
     );
 
     const copied = results.filter(({ reply }) => reply.ok && reply.text);
-    const empty = results.filter(({ reply }) => !reply.ok && reply.reason === "empty");
-    const needReload = results.filter(({ reply }) => !reply.ok && reply.reason === "no-script");
+    const skipped = results
+      .filter(({ reply }) => !(reply.ok && reply.text))
+      .map(({ tab, reply }) => ({ reason: reply.reason || "empty", name: reply.name || nameOf(tab) }));
 
     if (!copied.length) {
-      let message = tabs.length
-        ? "Không tìm thấy câu trả lời AI nào trong các tab của cửa sổ này."
-        : "Cửa sổ này chưa mở tab ChatGPT / Gemini / Grok / Claude nào.";
+      const message = [
+        tabs.length
+          ? "Không lấy được câu trả lời AI nào trong cửa sổ này."
+          : "Cửa sổ này chưa mở tab ChatGPT / Gemini / Grok / Claude nào.",
+        ...skipLines(skipped)
+      ].join("\n");
 
-      if (needReload.length) {
-        message += `\n↻ Tải lại ${needReload.length} tab AI rồi thử lại.`;
-      }
-
-      await deliver(activeTab, "", message, "error", "!");
+      await deliver(activeTab, "", message, "error");
       return;
     }
 
@@ -105,29 +143,21 @@ async function copyAllLatest(commandTab) {
       .map(({ reply }) => reply.text.trim())
       .join(blockMode ? "\n\n" : "\n\n---\n\n") + "\n";
 
-    const lines = [
-      `⚡ Đã copy ${copied.length} câu trả lời`,
-      copied.map(({ reply }) => reply.title).join(" · ")
-    ];
-
-    if (empty.length) {
-      lines.push(`⚠️ Chưa có câu trả lời: ${empty.map(({ reply, tab }) => reply.name || nameOf(tab)).join(", ")}`);
-    }
-
-    if (needReload.length) {
-      lines.push(`↻ ${needReload.length} tab cần tải lại: ${needReload.map(({ tab }) => nameOf(tab)).join(", ")}`);
-    }
-
-    const warned = empty.length || needReload.length;
+    const extra = skipLines(skipped);
 
     await deliver(
       activeTab,
       text,
-      lines.join("\n"),
-      warned ? "hint" : "success",
-      String(copied.length),
-      warned ? 4500 : 2200
+      [
+        `⚡ Đã copy ${copied.length} câu trả lời`,
+        copied.map(({ reply }) => reply.title).join(" · "),
+        ...extra
+      ].join("\n"),
+      extra.length ? "hint" : "success",
+      extra.length ? 4500 : 2200
     );
+  } catch (_) {
+    await deliver(activeTab, "", "Không thể copy. Hãy thử lại.", "error");
   } finally {
     copying = false;
   }
@@ -141,31 +171,26 @@ async function pageCopy(text, message, kind, duration) {
 
   if (text) {
     try {
-      // Never wait on a permission prompt: fall back after a moment.
+      // Fails when the page is not focused (address bar, DevTools...).
+      // Never wait on a permission prompt either.
       await Promise.race([
         navigator.clipboard.writeText(text),
         new Promise((_, reject) => setTimeout(reject, 1500))
       ]);
       ok = true;
-    } catch (_) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.cssText = "position:fixed;left:-9999px;top:0";
-      document.documentElement.appendChild(textarea);
-      textarea.select();
-      try { ok = document.execCommand("copy"); } catch (_) {}
-      textarea.remove();
-    }
+    } catch (_) {}
   }
 
   const colors = { success: "#111827", error: "#b42318", hint: "#b45309" };
-  const failed = text && !ok;
+  const failed = Boolean(text) && !ok;
 
   document.getElementById("ai-quick-copy-toast")?.remove();
 
   const toast = document.createElement("div");
   toast.id = "ai-quick-copy-toast";
-  toast.textContent = failed ? "Không thể copy. Hãy thử lại." : message;
+  toast.textContent = failed
+    ? "Không thể copy.\n👉 Bấm vào trang rồi nhấn lại phím tắt."
+    : message;
   toast.style.cssText = [
     "position:fixed", "right:20px", "bottom:20px", "z-index:2147483647",
     "padding:10px 14px", "border-radius:10px",
@@ -175,15 +200,15 @@ async function pageCopy(text, message, kind, duration) {
     "box-shadow:0 8px 24px rgba(0,0,0,.22)", "pointer-events:none"
   ].join(";");
   document.documentElement.appendChild(toast);
-  setTimeout(() => toast.remove(), duration);
+  setTimeout(() => toast.remove(), failed ? 4500 : duration);
 
   return ok;
 }
 
 // Copy `text` (or only show `message` when text is empty) on the active tab.
-// Pages where extensions cannot run (browser settings, the web store, the
-// new tab page...) fall back to the toolbar badge.
-async function deliver(tab, text, message, kind, badge, duration = 4500) {
+// On pages where extensions cannot run (browser settings, the add-ons store,
+// the new tab page...) nothing can be copied: flash a red "!" on the icon.
+async function deliver(tab, text, message, kind, duration = 4500) {
   if (tab?.id !== undefined) {
     try {
       const [result] = await chrome.scripting.executeScript({
@@ -195,10 +220,10 @@ async function deliver(tab, text, message, kind, badge, duration = 4500) {
     } catch (_) {}
   }
 
-  const failed = Boolean(text);
-
-  await chrome.action.setBadgeBackgroundColor({ color: failed || kind === "error" ? "#b42318" : "#047857" });
-  await chrome.action.setBadgeText({ text: failed ? "!" : badge });
-  setTimeout(() => chrome.action.setBadgeText({ text: "" }), BADGE_DURATION);
+  try {
+    await chrome.action.setBadgeBackgroundColor({ color: "#b42318" });
+    await chrome.action.setBadgeText({ text: "!" });
+    setTimeout(() => chrome.action.setBadgeText({ text: "" }), BADGE_DURATION);
+  } catch (_) {}
   return false;
 }

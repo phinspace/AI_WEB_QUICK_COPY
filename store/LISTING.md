@@ -58,7 +58,7 @@ At the bottom of a chat it copies the latest answer; scroll up and it copies the
 
 PRIVATE BY DESIGN
 • 100% local: no server, no account, no analytics, no network requests
-• Runs only on chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com and claude.ai
+• Reads content only on chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com and claude.ai
 • "storage" saves your settings; "activeTab" and "scripting" only write the clipboard when you press Alt+Shift+V
 • Copied answers are never stored
 
@@ -95,7 +95,7 @@ COPY ĐÚNG CÂU TRẢ LỜI ĐANG XEM
 
 RIÊNG TƯ TUYỆT ĐỐI
 • Chạy 100% trên máy: không server, không tài khoản, không thống kê, không gửi dữ liệu đi đâu
-• Chỉ chạy trên chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com và claude.ai
+• Chỉ đọc nội dung trên chatgpt.com, chat.openai.com, gemini.google.com, grok.com, x.com và claude.ai
 • "storage" để lưu cài đặt; "activeTab" và "scripting" chỉ dùng để ghi clipboard khi bạn nhấn Alt+Shift+V
 • Không bao giờ lưu nội dung đã copy
 
