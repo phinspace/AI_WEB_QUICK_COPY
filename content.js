@@ -59,7 +59,8 @@
   // Markdown for one response, wrapped in an identity block when enabled.
   function render(adapter, source, settings) {
     const markdown = AQC.toMarkdown(source.element, {
-      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0
+      headingOffset: settings.blockMode ? AQC.BLOCK_HEADING_OFFSET : 0,
+      unwrapChips: Boolean(adapter.unwrapChips)
     });
 
     if (!markdown) return null;

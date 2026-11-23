@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.5.1
+- Fixed ChatGPT names shown as clickable chips or cards (e.g. "Just Perfection", "Temporal") being dropped, leaving only the list number or an empty gap in a sentence ([#5](https://github.com/phinspace/ai_web_quick_copy/issues/5)). Bold text inside the chip is kept; source pills such as "GNOME Wiki Archive+1" are still left out. Only ChatGPT is affected; Gemini, Grok and Claude are copied as before.
+- Links no longer carry tracking parameters such as `?utm_source=chatgpt.com`, and doubled slashes in the path (`extensions.gnome.org//extension`) are collapsed.
+- Added `tests/run.js` (`node tests/run.js`, needs Playwright) with fixtures from a real ChatGPT card. Dev only, not packaged.
+
 ## 1.5.0
 - New: **Copy all AI tabs** — press `Ctrl+C` twice quickly (`⌘C` `⌘C` on macOS) on an AI page to copy the latest response of every ChatGPT, Gemini, Grok and Claude tab in the current window in one go, in tab order (other browser windows are left out), each in its own identity block. A browser shortcut does the same from any tab: suggested `Alt+C` (`⌃ Control+Shift+C` on macOS); Edge reserves `Alt+C`, so Edge users assign a key at `edge://extensions/shortcuts`.
 - Choose which AIs are gathered: untick an AI in the settings (e.g. Gemini) and copy-all leaves it out; the toast names it. All are ticked by default; the single-answer `Ctrl+C` is not affected.

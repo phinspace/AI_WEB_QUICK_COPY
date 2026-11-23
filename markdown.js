@@ -244,6 +244,32 @@
     return [`${fence}${language}`, ...source.replace(/\n+$/, "").split("\n"), fence];
   };
 
+  /**
+   * Tidy link targets: drop tracking parameters AI sites append
+   * (utm_source=chatgpt.com, ...) and collapse doubled slashes in the path
+   * (extensions.gnome.org//extension). Anything unparsable is kept as is.
+   */
+  const cleanHref = (href) => {
+    if (!href || !/^https?:\/\//i.test(href)) return href;
+
+    try {
+      const url = new URL(href);
+
+      for (const key of [...url.searchParams.keys()]) {
+        if (/^utm_/i.test(key)) url.searchParams.delete(key);
+      }
+
+      url.pathname = url.pathname.replace(/\/{2,}/g, "/");
+
+      let result = url.toString();
+      // URL keeps a bare "?" when every parameter was removed.
+      if (!url.search) result = result.replace(/\?(?=#|$)/, "");
+      return result;
+    } catch (_) {
+      return href;
+    }
+  };
+
   const serialize = (root, { headingOffset = 0 } = {}) => {
     const codeBlocks = [];
 
@@ -344,7 +370,7 @@
 
       if (tag === "a") {
         const content = serializeChildren(node).trim();
-        const href = node.getAttribute("href");
+        const href = cleanHref(node.getAttribute("href"));
 
         if (href && content) {
           return `[${content}](${href})`;
@@ -504,7 +530,7 @@
   AQC.toMarkdown = (element, options = {}) => {
     if (!element) return "";
 
-    const clone = AQC.getClone(element);
+    const clone = AQC.getClone(element, { unwrapChips: Boolean(options.unwrapChips) });
     if (!clone) return "";
 
     return serialize(clone, options);

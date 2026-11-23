@@ -212,7 +212,7 @@
     return container;
   };
 
-  root.getClone = (element) => {
+  root.getClone = (element, options = {}) => {
     if (!element) return null;
 
     const clone = element.cloneNode(true);
@@ -240,6 +240,49 @@
         node.setAttribute("data-aqc-ui-text", "");
       }
     });
+
+    // ChatGPT renders some answer text as clickable "entity chips": a
+    // <span role="button"> (or <button>) holding a name such as
+    // "Just Perfection" or "Temporal" inside a sentence, list item or
+    // heading. Removing every button (below) dropped those names (#5), so
+    // adapters that set `unwrapChips` get the chip replaced by its contents
+    // (keeping bold/links). A control counts as a chip only when it sits
+    // inside answer text and carries real words, not a UI verb like "Copy".
+    if (options.unwrapChips) {
+      const CHIP_HOST = "p, li, td, th, blockquote, h1, h2, h3, h4, h5, h6, strong, b, em, i, a, dt, dd";
+      const UI_WORDS = /^(copy|copy code|copied!?|edit|share|retry|more|show more|show less|less|expand|collapse|\+\d+)$/i;
+
+      clone.querySelectorAll("button, [role='button']").forEach((control) => {
+        if (!clone.contains(control) || !control.parentElement?.closest(CHIP_HOST)) return;
+        if (control.closest("pre")) return;
+
+        const inner = control.cloneNode(true);
+        inner.querySelectorAll(
+          "svg, img, button, [role='button'], input, textarea, select, [aria-hidden='true'], " +
+          ".sr-only, [class*='sr-only'], [class*='visually-hidden']"
+        ).forEach((node) => node.remove());
+
+        const text = (inner.textContent || "").replace(/\s+/g, " ").trim();
+
+        // Source/citation pills ("GNOME Wiki Archive+1") are links to the
+        // web sources, not answer text: leave them to be removed as before.
+        const CITATION = "[data-testid*='citation'], [class*='citation']";
+        if (/\S\+\d+$/.test(text) || control.closest(CITATION) || control.querySelector(CITATION)) return;
+
+        if (text) {
+          if (UI_WORDS.test(text)) return;
+          control.replaceWith(...inner.childNodes);
+          return;
+        }
+
+        // Name shown only through an accessible label (headings/bold titles).
+        const label = (control.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim();
+        if (label && !UI_WORDS.test(label) &&
+            control.parentElement.closest("h1, h2, h3, h4, h5, h6, strong, b")) {
+          control.replaceWith(document.createTextNode(label));
+        }
+      });
+    }
 
     const UI_SELECTOR =
       "button, [role='button'], input, textarea, select, svg, [data-aqc-ui-text]";

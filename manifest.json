@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Quick Copy",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Copy AI answers from ChatGPT, Gemini, Grok or Claude as Markdown: the one you're reading, or the latest of every AI tab.",
   "minimum_chrome_version": "110",
   "icons": {
