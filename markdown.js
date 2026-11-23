@@ -530,7 +530,7 @@
   AQC.toMarkdown = (element, options = {}) => {
     if (!element) return "";
 
-    const clone = AQC.getClone(element);
+    const clone = AQC.getClone(element, { unwrapChips: Boolean(options.unwrapChips) });
     if (!clone) return "";
 
     return serialize(clone, options);

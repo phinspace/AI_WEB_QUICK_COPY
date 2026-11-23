@@ -168,6 +168,8 @@
     id: "chatgpt",
     name: "CHATGPT",
     icon: "🟩",
+    // Keep names rendered as clickable chips/cards (see core.js getClone).
+    unwrapChips: true,
 
     matches(host) {
       return host === "chatgpt.com" || host === "chat.openai.com";
