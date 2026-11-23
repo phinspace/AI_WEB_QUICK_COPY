@@ -264,6 +264,11 @@
 
         const text = (inner.textContent || "").replace(/\s+/g, " ").trim();
 
+        // Source/citation pills ("GNOME Wiki Archive+1") are links to the
+        // web sources, not answer text: leave them to be removed as before.
+        const CITATION = "[data-testid*='citation'], [class*='citation']";
+        if (/\S\+\d+$/.test(text) || control.closest(CITATION) || control.querySelector(CITATION)) return;
+
         if (text) {
           if (UI_WORDS.test(text)) return;
           control.replaceWith(...inner.childNodes);

@@ -35,6 +35,16 @@ const cases = [
     expect: [{ has: "Công nghệ mình muốn giới thiệu là Temporal." }]
   },
   {
+    name: "ChatGPT source pill (\"GNOME Wiki Archive+1\") is dropped, not copied as text",
+    html: fixture("chatgpt-source-pill.html"),
+    options: { unwrapChips: true },
+    expect: [
+      { lacks: "GNOME Wiki Archive" },
+      { lacks: "+1" },
+      { has: "tách biệt hệ điều hành khỏi ứng dụng." }
+    ]
+  },
+  {
     name: "Code block: label becomes the fence language, Copy buttons are removed",
     html: fixture("code-block-copy-button.html"),
     options: { unwrapChips: true },

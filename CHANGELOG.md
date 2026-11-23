@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 
 ## 1.5.1
-- Fixed ChatGPT names shown as clickable chips or cards (e.g. "Just Perfection", "Temporal") being dropped, leaving only the list number or an empty gap in a sentence ([#5](https://github.com/phinspace/ai_web_quick_copy/issues/5)). Bold text inside the chip is kept. Only ChatGPT is affected; Gemini, Grok and Claude are copied as before.
+- Fixed ChatGPT names shown as clickable chips or cards (e.g. "Just Perfection", "Temporal") being dropped, leaving only the list number or an empty gap in a sentence ([#5](https://github.com/phinspace/ai_web_quick_copy/issues/5)). Bold text inside the chip is kept; source pills such as "GNOME Wiki Archive+1" are still left out. Only ChatGPT is affected; Gemini, Grok and Claude are copied as before.
 - Links no longer carry tracking parameters such as `?utm_source=chatgpt.com`, and doubled slashes in the path (`extensions.gnome.org//extension`) are collapsed.
 - Added `tests/run.js` (`node tests/run.js`, needs Playwright) with fixtures from a real ChatGPT card. Dev only, not packaged.
 
